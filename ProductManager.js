@@ -1,4 +1,5 @@
-class productManager {
+class ProductManager {
+    #id = 0;
     constructor() {
         this.products = [];
     }
@@ -7,14 +8,13 @@ class productManager {
         return this.products;
     }
 
-    #id = 0;
+    addProduct(title,description,price,thumbnail,code,stock = 0){
+        let filtro = this.products.filter((product) => product.title === title);
+        if (filtro.length > 0) {
+            console.log('El producto ya existe');
+            return;
+        }
 
-    #getID() {
-        this.#id++;
-        return this.#id;
-    }
-
-    addProducto(title, description, price, thumbnail, code, stock) {
         const product = {
             title,
             description,
@@ -23,27 +23,81 @@ class productManager {
             code,
             stock,
         };
-
-
-        // agrego ID al evento
         product.id = this.#getID();
-        // agrego el evento a la lista
         this.products.push(product);
     }
 
+    #getID(){
+        const oldID = this.#id
+        this.#id++;
+        return oldID;
+    }
+
     getProductByID(idProduct){
-        const productIndex = this.products.findIndex((product) => product.id === idProduct)
-        if (eventoIndex === -1){
-            console.log('No existe el producto');
-            return
-        } else {
-            return productIndex;
+        const productIndex = this.products.findIndex((product)  => product.id === idProduct)
+        if(productIndex === -1) {
+            console.log('No existe el producto')
+            return;
         }
+        const product = this.products[productIndex];
+        return product;
+    }
+
+    updateProduct(idProduct, newPrice, newSotck){
+        const productIndex = this.products.findIndex(
+            (product)  => product.id === idProduct
+        );
+        if(productIndex === -1) {
+            console.log('No existe el producto')
+            return;
+        }
+        
+        const product = this.products[productIndex];
+
+        this.products[productIndex] = {
+                ...product,
+                price: newPrice,
+                stock: newSotck,
+        }
+    }
+
+    deleteProduct(idProduct){
+        const productIndex = this.products.findIndex(
+            (product)  => product.id === idProduct
+        );
+        if(productIndex === -1) {
+            console.log('No existe el producto')
+            return;
+        }
+        
+        const deleteProduct = this.products[productIndex];
+        const newArray = this.products.filter((product) => product !== deleteProduct);
+        return newArray;
     }
 }
 
-productManager.getProducts()
-productManager.addproduct('producto prueba', 'Este es un producto prueba', 200, 'sin imagen', 'abc123', 25)
-productManager.getProducts()
-productManager.addproduct('producto prueba', 'Este es un producto prueba', 200, 'sin imagen', 'abc123', 25)
-productManager.getProductByID(1)
+const pm = new ProductManager;
+// CORRO PRIMERA INSTANCIA
+console.log('=====================')
+console.log(pm.getProducts());
+
+pm.addProduct('producto prueba', 'este es un producto prueba', 200, 'sin imagen', 'abc123', 25);
+pm.addProduct('producto prueba 2', 'este es un producto prueba 2', 300, 'sin imagen', 'abc123', 35);
+
+// CORRO SEGUNDA INSTANCIA
+console.log('=====================')
+console.log(pm.getProducts());
+
+// CORRO TERCER INSTANCIA
+console.log('=====================')
+console.log(pm.getProductByID(1));
+
+pm.updateProduct(0, 220, 40);
+
+// CORRO CUARTA INSTANCIA
+console.log('=====================')
+console.log(pm.getProducts());
+
+// CORRO QUINTA INSTANCIA
+console.log('=====================')
+console.log(pm.deleteProduct(0));
